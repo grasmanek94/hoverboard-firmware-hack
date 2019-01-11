@@ -50,7 +50,7 @@ namespace JoystickController
                     {
                         //Console.SetCursorPosition(0, i++);
                         //Console.Write("(" + pad.LStick.X.ToString("D06") + ", " + pad.LStick.Y.ToString("D06") + ")");
-                        int steer = pad.LStick.X;
+                        int steer = pad.RStick.X;
                         int speed = pad.LStick.Y;
 
                         if(steer < deadzone && steer > -deadzone)
@@ -95,11 +95,11 @@ namespace JoystickController
                                 byte[] steerBytes = BitConverter.GetBytes(steer16);
                                 byte[] speedBytes = BitConverter.GetBytes(speed16);
 
-                                if (BitConverter.IsLittleEndian)
+                                /*if (BitConverter.IsLittleEndian)
                                 {
                                     Array.Reverse(steerBytes);
                                     Array.Reverse(speedBytes);
-                                }
+                                }*/
 
                                 byte[] total = new byte[5]
                                 {

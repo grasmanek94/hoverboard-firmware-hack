@@ -78,7 +78,7 @@ void loop() {
   }*/
 
 //  if(changed)
-  while(Serial.available() >= 5)
+  while(Serial.available() > sizeof(command))
   {
     char c;
     do
@@ -86,14 +86,14 @@ void loop() {
         c = Serial.read();
         continue;
     }
-    while(c != ';' && Serial.available() > 0);
+    while(c != ';');
 
-    if(Serial.available() >= 4)
-    {
-        char* cmd = (char*)&command;
-        Serial.readBytes(cmd, sizeof(command));
-        Serial.println("Speed: " + String(command.speed) + ", steer: " + String(command.steer));
-        ss.write((char*)&cmd, sizeof(command));   
-    }
+    while(Serial.available() < sizeof(command))
+    {}
+    
+    char* cmd = (char*)&command;
+    Serial.readBytes(cmd, sizeof(command));
+    Serial.println("Speed: " + String(command.speed) + ", steer: " + String(command.steer));
+    ss.write((char*)&cmd, sizeof(command));
   }
 }
