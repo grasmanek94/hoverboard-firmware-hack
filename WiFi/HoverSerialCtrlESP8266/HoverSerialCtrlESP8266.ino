@@ -45,7 +45,7 @@ void loop()
     unsigned long time_y = millis();
     if(time_y - time_x > 50)
     {
-        data = "S" + String(command.speed) + ",T" + String(command.steer) + "\r\n";
+        //data = "S" + String(command.speed) + ",T" + String(command.steer) + "\r\n";
         time_x = time_y;
         Serial.print(data);
         ss.write((char*)&command, sizeof(command));
@@ -66,6 +66,7 @@ void loop()
             data[current++] = c;
             if(current == 5)
             {
+                current = 0;
                 memcpy((char*)&command, &data[1], 4);
             }
         }
@@ -141,9 +142,10 @@ void loop()
                     }
                     else if(c != ';')
                     {
-                        wifi_data[current++] = c;
+                        wifi_data[wifi_current++] = c;
                         if(wifi_current == 5)
                         {
+                            wifi_current = 0;
                             memcpy((char*)&command, &wifi_data[1], 4);
                         }
                     }                    

@@ -17,6 +17,7 @@ namespace JoystickController
 
             TcpClient client = new TcpClient(SERVER_IP, PORT_NO);
             NetworkStream port = client.GetStream();
+            client.NoDelay = true;
 
             X.UpdatesPerSecond = 60;
             Console.CancelKeyPress += delegate {
@@ -37,8 +38,6 @@ namespace JoystickController
 
             int old_speed = 0;
             int old_steer = 0;
-
-            client.NoDelay = true;
 
             while (running)
             {
@@ -81,7 +80,13 @@ namespace JoystickController
 
                         //Console.Write("(" + steer.ToString("D04") + ", " + speed.ToString("D04") + ")");
 
-                        if(client.Connected)
+                        if(!client.Connected)
+                        {
+                            client.Connect(SERVER_IP, PORT_NO);
+                            port = client.GetStream();
+                            client.NoDelay = true;
+                        }
+                        else if(client.Connected)
                         {
                             if ((old_speed != speed || old_steer != steer))
                             {
@@ -113,7 +118,7 @@ namespace JoystickController
 
                                 port.Write(total, 0, 5);
 
-                                //Console.WriteLine(BitConverter.ToString(total));
+                                Console.WriteLine(BitConverter.ToString(total));
                             }
 
                             if(client.Available > 0)
