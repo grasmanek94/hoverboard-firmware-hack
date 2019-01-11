@@ -91,9 +91,8 @@ void loop() {
     while(Serial.available() < sizeof(command))
     {}
     
-    char* cmd = (char*)&command;
-    Serial.readBytes(cmd, sizeof(command));
+    Serial.readBytes((char*)&command, sizeof(command));
     Serial.println("Speed: " + String(command.speed) + ", steer: " + String(command.steer));
-    ss.write((char*)&cmd, sizeof(command));
+    ss.write((char*)&command, sizeof(command));
   }
 }
