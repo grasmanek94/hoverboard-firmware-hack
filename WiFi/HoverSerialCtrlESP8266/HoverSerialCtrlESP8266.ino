@@ -147,7 +147,7 @@ void loop()
                         wifi_data[current++] = c;
                         if(wifi_current == 5)
                         {
-                            memcpy((char*)&command, data+1, 4);
+                            memcpy((char*)&command, wifi_data+1, 4);
                         }
                     }                    
                 }
