@@ -48,7 +48,7 @@ namespace JoystickController
                 {
                     if (pad.Update() && pad.IsConnected)
                     {
-                        Console.SetCursorPosition(0, i++);
+                        //Console.SetCursorPosition(0, i++);
                         //Console.Write("(" + pad.LStick.X.ToString("D06") + ", " + pad.LStick.Y.ToString("D06") + ")");
                         int steer = pad.LStick.X;
                         int speed = pad.LStick.Y;
@@ -73,36 +73,54 @@ namespace JoystickController
                             speed /= divider;
                         }
 
-                        Console.Write("(" + steer.ToString("D04") + ", " + speed.ToString("D04") + ")");
+                        //Console.Write("(" + steer.ToString("D04") + ", " + speed.ToString("D04") + ")");
 
                         if(!port.IsOpen)
                         {
                             port.Open();
                         }
 
-                        if(port.IsOpen && (old_speed != speed || old_steer != steer))
+                        if(port.IsOpen)
                         {
-                            old_speed = speed;
-                            old_steer = steer;
-
-                            short steer16 = (short)steer;
-                            steer16 *= 10;
-                            short speed16 = (short)speed;
-                            speed16 *= 10;
-
-                            byte[] steerBytes = BitConverter.GetBytes(steer16);
-                            byte[] speedBytes = BitConverter.GetBytes(speed16);
-
-                            if (BitConverter.IsLittleEndian)
+                            if ((old_speed != speed || old_steer != steer))
                             {
-                                Array.Reverse(steerBytes);
-                                Array.Reverse(speedBytes);
+                                old_speed = speed;
+                                old_steer = steer;
+
+                                short steer16 = (short)steer;
+                                steer16 *= 10;
+                                short speed16 = (short)speed;
+                                speed16 *= 10;
+
+                                byte[] steerBytes = BitConverter.GetBytes(steer16);
+                                byte[] speedBytes = BitConverter.GetBytes(speed16);
+
+                                if (BitConverter.IsLittleEndian)
+                                {
+                                    Array.Reverse(steerBytes);
+                                    Array.Reverse(speedBytes);
+                                }
+
+                                byte[] total = new byte[5]
+                                {
+                                    (byte)';',
+                                    steerBytes[0],
+                                    steerBytes[1],
+                                    speedBytes[0],
+                                    speedBytes[1]
+                                };
+
+                                port.Write(total, 0, 5);
+
+                                //Console.WriteLine(BitConverter.ToString(total));
                             }
 
-                            port.Write(steerBytes, 0, steerBytes.Length);
-                            port.Write(speedBytes, 0, speedBytes.Length);
-
-                            Console.Write("W");
+                            if(port.BytesToRead > 0)
+                            {
+                                byte[] bytes = new byte[port.BytesToRead];
+                                port.Read(bytes, 0, bytes.Length);
+                                Console.Write(System.Text.Encoding.ASCII.GetString(bytes));
+                            }
                         }
                     }
                 }
