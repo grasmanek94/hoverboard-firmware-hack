@@ -41,13 +41,13 @@ unsigned long time_x = 0;
 
 void loop() 
 {  
-    String data = "";
+    String str_dat = "";
     unsigned long time_y = millis();
     if(time_y - time_x > 50)
     {
-        //data = "S" + String(command.speed) + ",T" + String(command.steer) + "\r\n";
+        //str_dat = "S" + String(command.speed) + ",T" + String(command.steer) + "\r\n";
         time_x = time_y;
-        Serial.print(data);
+        Serial.print(str_dat);
         ss.write((char*)&command, sizeof(command));
     }
 
@@ -154,13 +154,13 @@ void loop()
         }
         
         //check UART for data
-        if(data.length())
+        if(str_dat.length())
         {
             for(int i = 0; i < MAX_SRV_CLIENTS; i++)
             {
                 if (serverClients[i] && serverClients[i].connected())
                 {
-                    serverClients[i].write(data.c_str(), data.length());
+                    serverClients[i].write(str_dat.c_str(), str_dat.length());
                     delay(1);
                 }
             }
