@@ -3,7 +3,7 @@
 
 #define MAX_SRV_CLIENTS 1
 const char* ssid = "GZX";
-const char* password = "******************";
+const char* password = "";
 
 SoftwareSerial ss(5,4);
 
@@ -66,7 +66,7 @@ void loop()
             data[current++] = c;
             if(current == 5)
             {
-                memcpy((char*)&command, data+1, 4);
+                memcpy((char*)&command, &data[1], 4);
             }
         }
     }
@@ -86,27 +86,24 @@ void loop()
         }
         else
         {
-            for(i = 0; i < MAX_SRV_CLIENTS; i++)
+            for(int i = 0; i < MAX_SRV_CLIENTS; i++)
             {
                 if (serverClients[i] && serverClients[i].connected())
                 {
-                    serverClient.stop();
+                    serverClients[i].stop();
                 }
             }
             server.stop();
-            WiFi.stop();
-            WiFi.begin(ssid, password);
         }
     }
 
     if(connected_wifi)
     {
-        uint8_t i;
         // check if there are any new clients
         if (server.hasClient())
         {
             bool added = false;
-            for(i = 0; i < MAX_SRV_CLIENTS; i++)
+            for(int i = 0; i < MAX_SRV_CLIENTS; i++)
             {
                 //find free/disconnected spot
                 if (!serverClients[i] || !serverClients[i].connected())
@@ -130,7 +127,7 @@ void loop()
         }
         
         //check clients for data
-        for(i = 0; i < MAX_SRV_CLIENTS; i++)
+        for(int i = 0; i < MAX_SRV_CLIENTS; i++)
         {
             if (serverClients[i] && serverClients[i].connected())
             {
@@ -147,7 +144,7 @@ void loop()
                         wifi_data[current++] = c;
                         if(wifi_current == 5)
                         {
-                            memcpy((char*)&command, wifi_data+1, 4);
+                            memcpy((char*)&command, &wifi_data[1], 4);
                         }
                     }                    
                 }
@@ -157,7 +154,7 @@ void loop()
         //check UART for data
         if(data.length())
         {
-            for(i = 0; i < MAX_SRV_CLIENTS; i++)
+            for(int i = 0; i < MAX_SRV_CLIENTS; i++)
             {
                 if (serverClients[i] && serverClients[i].connected())
                 {
