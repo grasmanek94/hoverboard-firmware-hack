@@ -38,6 +38,8 @@ namespace JoystickController
             int old_speed = 0;
             int old_steer = 0;
 
+            client.NoDelay = true;
+
             while (running)
             {
                 Thread.Sleep(50);
