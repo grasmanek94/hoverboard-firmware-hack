@@ -1,7 +1,7 @@
 ﻿using System;
 using XInput.Wrapper;
-using System.IO.Ports;
 using System.Threading;
+using System.Net.Sockets;
 
 namespace JoystickController
 {
@@ -10,9 +10,13 @@ namespace JoystickController
         
         static void Main(string[] args)
         {
+            const int PORT_NO = 23;
+            const string SERVER_IP = "ESP-15DD91";
+
             bool running = true;
 
-            SerialPort port = new SerialPort("COM5", 19200);
+            TcpClient client = new TcpClient(SERVER_IP, PORT_NO);
+            NetworkStream port = client.GetStream();
 
             X.UpdatesPerSecond = 60;
             Console.CancelKeyPress += delegate {
@@ -36,7 +40,7 @@ namespace JoystickController
 
             while (running)
             {
-                Thread.Sleep(33);
+                Thread.Sleep(50);
 
                 if(!X.IsAvailable)
                 {
@@ -75,12 +79,7 @@ namespace JoystickController
 
                         //Console.Write("(" + steer.ToString("D04") + ", " + speed.ToString("D04") + ")");
 
-                        if(!port.IsOpen)
-                        {
-                            port.Open();
-                        }
-
-                        if(port.IsOpen)
+                        if(client.Connected)
                         {
                             if ((old_speed != speed || old_steer != steer))
                             {
@@ -115,9 +114,9 @@ namespace JoystickController
                                 //Console.WriteLine(BitConverter.ToString(total));
                             }
 
-                            if(port.BytesToRead > 0)
+                            if(client.Available > 0)
                             {
-                                byte[] bytes = new byte[port.BytesToRead];
+                                byte[] bytes = new byte[client.Available];
                                 port.Read(bytes, 0, bytes.Length);
                                 Console.Write(System.Text.Encoding.ASCII.GetString(bytes));
                             }

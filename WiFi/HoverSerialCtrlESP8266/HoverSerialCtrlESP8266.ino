@@ -45,9 +45,9 @@ void loop()
     unsigned long time_y = millis();
     if(time_y - time_x > 50)
     {
-        data = "Speed: " + String(command.speed) + ", steer: " + String(command.steer);
+        data = "S" + String(command.speed) + ",T" + String(command.steer) + "\r\n";
         time_x = time_y;
-        Serial.println(data);
+        Serial.print(data);
         ss.write((char*)&command, sizeof(command));
     }
 
