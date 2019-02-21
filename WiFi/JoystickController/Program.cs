@@ -7,22 +7,18 @@ namespace JoystickController
 {
     class Program
     {
-        
-        static void Main(string[] args)
+        static bool running;
+
+        static void Controller()
         {
             const int PORT_NO = 23;
             const string SERVER_IP = "ESP-15DD91";
-
-            bool running = true;
 
             TcpClient client = new TcpClient(SERVER_IP, PORT_NO);
             NetworkStream port = client.GetStream();
             client.NoDelay = true;
 
             X.UpdatesPerSecond = 60;
-            Console.CancelKeyPress += delegate {
-                running = false;
-            };
 
             X.Gamepad[] pads = {
                 X.Gamepad_1,
@@ -43,7 +39,7 @@ namespace JoystickController
             {
                 Thread.Sleep(50);
 
-                if(!X.IsAvailable)
+                if (!X.IsAvailable)
                 {
                     continue;
                 }
@@ -58,7 +54,7 @@ namespace JoystickController
                         int steer = pad.RStick.X;
                         int speed = pad.LStick.Y;
 
-                        if(steer < deadzone && steer > -deadzone)
+                        if (steer < deadzone && steer > -deadzone)
                         {
                             steer = 0;
                         }
@@ -68,7 +64,7 @@ namespace JoystickController
                             steer /= divider;
                         }
 
-                        if(speed < deadzone && speed > -deadzone)
+                        if (speed < deadzone && speed > -deadzone)
                         {
                             speed = 0;
                         }
@@ -80,13 +76,13 @@ namespace JoystickController
 
                         //Console.Write("(" + steer.ToString("D04") + ", " + speed.ToString("D04") + ")");
 
-                        if(!client.Connected)
+                        if (!client.Connected)
                         {
                             client.Connect(SERVER_IP, PORT_NO);
                             port = client.GetStream();
                             client.NoDelay = true;
                         }
-                        else if(client.Connected)
+                        else if (client.Connected)
                         {
                             if ((old_speed != speed || old_steer != steer))
                             {
@@ -121,7 +117,7 @@ namespace JoystickController
                                 Console.WriteLine(BitConverter.ToString(total));
                             }
 
-                            if(client.Available > 0)
+                            if (client.Available > 0)
                             {
                                 byte[] bytes = new byte[client.Available];
                                 port.Read(bytes, 0, bytes.Length);
@@ -129,6 +125,28 @@ namespace JoystickController
                             }
                         }
                     }
+                }
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            running = true;
+
+            Console.CancelKeyPress += delegate
+            {
+                running = false;
+            };
+
+            while (running)
+            {
+                try
+                {
+                    Controller();
+                }
+                catch (Exception e)
+                {
+
                 }
             }
         }
