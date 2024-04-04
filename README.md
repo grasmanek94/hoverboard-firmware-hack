@@ -17,12 +17,12 @@ https://media.ccc.de/v/gpn18-95-howto-moving-objects
 Here are detailed build instructions for some finished projects.
 If possible, a prebuild firmware release is available for these usecases, so you don't need to compile the firmware yourself
 
-TranspOtter: https://github.com/NiklasFauth/hoverboard-firmware-hack/wiki/Build-Instruction:-TranspOtter
+TranspOtter: https://github.com/lucysrausch/hoverboard-firmware-hack/wiki/Build-Instruction:-TranspOtter
 
 ---
 
 ## Hardware
-![otter](https://raw.githubusercontent.com/NiklasFauth/hoverboard-firmware-hack/master/pinout.png)
+![otter](https://raw.githubusercontent.com/lucysrausch/hoverboard-firmware-hack/master/pinout.png)
 
 The original Hardware supports two 4-pin cables that originally were connected to the two sensor boards. They break out GND, 12/15V and USART2&3 of the Hoverboard mainboard.
 Both USART2 & 3 can be used for UART and I2C, PA2&3 can be used as 12bit ADCs.
@@ -34,6 +34,8 @@ http://vocke.tv/lib/exe/fetch.php?media=20150722_hoverboard_sch.pdf
 
 ## Flashing
 To build the firmware, just type "make". Make sure you have specified your gcc-arm-none-eabi binary location in the Makefile ("PREFIX = ...") (version 7 works, there is a version that does not!) (if the ons in linux repos do not work, use the official version: https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads). Right to the STM32, there is a debugging header with GND, 3V3, SWDIO and SWCLK. Connect GND, SWDIO and SWCLK to your SWD programmer, like the ST-Link found on many STM devboards.
+
+Do not power the mainboard from the 3.3V of your programmer! This has already killed multiple mainboards.
 
 Make sure you hold the powerbutton or connect a jumper to the power button pins while flashing the firmware, as the STM might release the power latch and switches itself off during flashing. Battery > 36V have to be connected while flashing.
 
@@ -57,6 +59,10 @@ Then you can simply flash the firmware:
 ```
 st-flash --reset write build/hover.bin 0x8000000
 ```
+or
+```
+openocd -f interface/stlink-v2.cfg -f target/stm32f1x.cfg -c flash "write_image erase build/hover.bin 0x8000000"
+```
 
 ---
 ## Troubleshooting
@@ -74,17 +80,34 @@ Most robust way for input is to use the ADC and potis. It works well even on 1m 
 ---
 
 
-## Examples
+## Examples and links
 
 Have a look at the config.h in the Inc directory. That's where you configure to firmware to match your project.
 Currently supported: Wii Nunchuck, analog potentiometer and PPM-Sum signal from a RC remote.
+A good example of control via UART, eg. from an Arduino or raspberryPi, can be found here:
+https://github.com/p-h-a-i-l/hoverboard-firmware-hack
+
 If you need additional features like a boost button, have a look at the while(1) loop in the main.c
+
+### Hoverboardhack for AT32F403RCT6 based mainboards
+
+* [https://github.com/cloidnerux/hoverboard-firmware-hack](https://github.com/cloidnerux/hoverboard-firmware-hack)
+
+### Hoverboardhack for split mainboards
+
+* [https://github.com/flo199213/Hoverboard-Firmware-Hack-Gen2](https://github.com/flo199213/Hoverboard-Firmware-Hack-Gen2)
+
+### Online Compiler
+
+* [RoboDurdens awesome](https://github.com/RoboDurden) online compiler: [https://pionierland.de/hoverhack/](https://pionierland.de/hoverhack/) 
 
 ### Additional Hardware
 
 * [breakout/interconnect boards](https://github.com/Jan--Henrik/hoverboard-breakout)  Breakout/Interconnection boards for hoverboard hacking.
 
 ### Projects based on it
+* [Bidirectional UART communication](https://github.com/RoboDurden/hoverboard-firmware-hack) with Arduino example code
 * [bobbycar-optimized firmware](https://github.com/larsmm/hoverboard-firmware-hack-bbcar)  based on this one with driving modes, acceleration ramps and some other features
 * [wheel chair](https://github.com/Lahorde/steer_speed_ctrl) controlled with a joystick or using a CC2650 sensortag to control it over  bluetooth with pitch/roll.
-* [TranspOtterNG](https://github.com/Jan--Henrik/transpOtterNG) TranspOtter is an open source semi self driving transportation platform based on hoverboard hardware
+* [TranspOtterNG](https://github.com/Jana-Marie/transpOtterNG) TranspOtter is an open source semi self driving transportation platform based on hoverboard hardware
+* [BiPropellant](https://github.com/bipropellant) - fork which focusses on reliable machine control, but also retains HoverBoard functionality if desired.
