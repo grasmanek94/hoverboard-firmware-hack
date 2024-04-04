@@ -5,7 +5,7 @@
 #include "stdio.h"
 #include "string.h"
 
-UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart2;
 
 #ifdef DEBUG_SERIAL_USART3
 #define UART_DMA_CHANNEL DMA1_Channel2
