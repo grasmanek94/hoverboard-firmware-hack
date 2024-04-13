@@ -95,7 +95,7 @@
 #define STEER_COEFFICIENT   0.5  // higher value == stronger. if you do not want any steering, set it to 0.0; 0.0 to 1.0
 #define INVERT_R_DIRECTION
 #define INVERT_L_DIRECTION
-#define BEEPS_BACKWARD 1    // 0 or 1
+#define BEEPS_BACKWARD 0    // 0 or 1
 
 //Turbo boost at high speeds while button1 is pressed:
 //#define ADDITIONAL_CODE \
